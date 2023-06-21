@@ -1,0 +1,52 @@
+language: java
+
+jdk:
+  - openjdk8
+
+services:
+  - docker
+
+# Etapas del pipeline
+stages:
+  - build
+  - test
+  - build_docker
+
+# Configuración de las etapas
+jobs:
+  include:
+    - stage: build
+      name: "Compilación Socket Client Application"
+      script:
+        - cd socket_application
+        - mvn clean compile
+
+    - stage: build
+      name: "Compilación Socket Server Application"
+      script:
+        - cd socket_server
+        - mvn clean compile
+
+    - stage: test
+      name: "Pruebas de la Aplicación Socket Client Application"
+      script:
+        - cd socket_application
+        - mvn test
+
+    - stage: test
+      name: "Pruebas de la Aplicación Socket Server Application"
+      script:
+        - cd socket_server
+        - mvn test
+
+    - stage: build_docker
+      name: "Construcción de imagen de Docker para la Aplicación 1"
+      script:
+        - cd socket_application
+        - docker build -t socket-client -f Dockerfile.client .
+
+    - stage: build_docker
+      name: "Construcción de imagen de Docker para la Aplicación 2"
+      script:
+        - cd socket_server
+        - docker build -t socket-server -f Dockerfile.client .
